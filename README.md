@@ -4,6 +4,22 @@ A modern, responsive, and beginner-friendly expense tracker web application buil
 
 ---
 
+## 📂 Repository
+
+The full source code for BudgetBuddy is available on GitHub.  
+This project follows a modular ES6 architecture for clean separation of concerns.
+
+### 🔗 Source Code
+https://github.com/japhet996sunday-cell/budgetbuddy-expense-tracker
+
+### ⚙️ Running Locally
+
+Clone the repository:
+
+```bash
+git clone https://github.com/japhet996sunday-cell/budgetbuddy-expense-tracker
+
+---
 ## 🚀 Live Demo
 https://japhet996sunday-cell.github.io/budgetbuddy-expense-tracker/ 
 
@@ -84,7 +100,7 @@ This project demonstrates:
 ![Add Transaction](screenshots/add-transaction.png)
 
 ### Mobile View
-![Mobile View](screenshots/mobile-responsive.png) 
+![Mobile View](screenshots/Mobile-responsive.png) 
 
 ---
 
