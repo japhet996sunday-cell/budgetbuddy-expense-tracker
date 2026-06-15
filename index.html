@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="BudgetBuddy – Personal expense tracker to manage your income and expenses." />
+    <title>BudgetBuddy – Expense Tracker</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <!-- App Styles -->
+    <link rel="stylesheet" href="assets/css/style.css" />
+
+    <!-- Favicon (inline SVG data URI) -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>"
+    />
+  </head>
+
+  <body>
+
+    <!-- ── Navbar ──────────────────────────────────────────────── -->
+    <nav class="app-navbar" role="banner">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <span class="navbar-brand-text">
+            Budget<span>Buddy</span>
+          </span>
+          <span class="nav-pill">Beta</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <button
+            id="theme-toggle-btn"
+            class="btn-theme"
+            aria-label="Toggle dark mode"
+            title="Toggle theme"
+          >
+            <i id="theme-icon" class="bi bi-moon-stars-fill"></i>
+          </button>
+          <button
+            class="btn-add-txn d-none d-sm-inline-flex"
+            data-bs-toggle="modal"
+            data-bs-target="#transactionModal"
+          >
+            <i class="bi bi-plus-lg"></i>
+            Add Transaction
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── Main Content ─────────────────────────────────────────── -->
+    <main class="app-wrapper" role="main">
+
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Track and manage your personal finances</p>
+      </div>
+
+      <!-- ── Summary Cards ──────────────────────────────────────── -->
+      <div class="row g-3 mb-4">
+        <!-- Balance -->
+        <div class="col-12 col-md-4">
+          <div class="summary-card card-balance">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <p class="card-label">Total Balance</p>
+                <span id="summary-balance" class="summary-amount">₦0.00</span>
+              </div>
+              <div class="card-icon-wrap icon-balance">
+                <i class="bi bi-wallet2"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Income -->
+        <div class="col-6 col-md-4">
+          <div class="summary-card card-income">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <p class="card-label">Total Income</p>
+                <span id="summary-income" class="summary-amount amount-income">₦0.00</span>
+              </div>
+              <div class="card-icon-wrap icon-income">
+                <i class="bi bi-arrow-down-circle"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Expenses -->
+        <div class="col-6 col-md-4">
+          <div class="summary-card card-expense">
+            <div class="d-flex align-items-start justify-content-between">
+              <div>
+                <p class="card-label">Total Expenses</p>
+                <span id="summary-expense" class="summary-amount amount-expense">₦0.00</span>
+              </div>
+              <div class="card-icon-wrap icon-expense">
+                <i class="bi bi-arrow-up-circle"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Chart + Transaction List ───────────────────────────── -->
+      <div class="row g-4">
+
+        <!-- Transaction List (left / full width on mobile) -->
+        <div class="col-12 col-xl-8">
+          <div class="section-card">
+
+            <!-- Header -->
+            <div class="section-header">
+              <div class="d-flex align-items-center gap-2">
+                <h2 class="section-title">Transactions</h2>
+                <span id="txn-count" class="txn-count-badge">0</span>
+              </div>
+              <button
+                class="btn-add-txn"
+                data-bs-toggle="modal"
+                data-bs-target="#transactionModal"
+              >
+                <i class="bi bi-plus-lg"></i>
+                <span class="d-none d-sm-inline">Add</span>
+              </button>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+              <div class="row g-2">
+                <!-- Search -->
+                <div class="col-12 col-sm-6 col-lg-4">
+                  <div class="search-wrap">
+                    <i class="bi bi-search search-icon"></i>
+                    <input
+                      type="text"
+                      id="search-input"
+                      class="filter-input"
+                      placeholder="Search transactions…"
+                      aria-label="Search transactions"
+                    />
+                  </div>
+                </div>
+                <!-- Category Filter -->
+                <div class="col-6 col-sm-3 col-lg-2">
+                  <select
+                    id="filter-category"
+                    class="filter-select"
+                    aria-label="Filter by category"
+                  >
+                    <option value="all">All Categories</option>
+                  </select>
+                </div>
+                <!-- Type Filter -->
+                <div class="col-6 col-sm-3 col-lg-2">
+                  <select
+                    id="filter-type"
+                    class="filter-select"
+                    aria-label="Filter by type"
+                  >
+                    <option value="all">All Types</option>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                  </select>
+                </div>
+                <!-- Date From -->
+                <div class="col-6 col-sm-4 col-lg-2">
+                  <input
+                    type="date"
+                    id="filter-from"
+                    class="filter-input"
+                    aria-label="Filter from date"
+                  />
+                </div>
+                <!-- Date To -->
+                <div class="col-6 col-sm-4 col-lg-2">
+                  <input
+                    type="date"
+                    id="filter-to"
+                    class="filter-input"
+                    aria-label="Filter to date"
+                  />
+                </div>
+                <!-- Clear -->
+                <div class="col-12 col-sm-4 col-lg-12 d-flex justify-content-end">
+                  <button
+                    id="clear-filters-btn"
+                    class="btn-cancel"
+                    style="font-size:0.78rem; padding: 0.35rem 0.875rem;"
+                  >
+                    <i class="bi bi-x-circle me-1"></i>Clear filters
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state">
+              <div class="empty-state-icon">
+                <i class="bi bi-inbox"></i>
+              </div>
+              <h6>No transactions yet</h6>
+              <p>Add your first income or expense to get started.</p>
+              <button
+                class="btn-add-txn mt-2"
+                data-bs-toggle="modal"
+                data-bs-target="#transactionModal"
+              >
+                <i class="bi bi-plus-lg"></i>
+                Add Transaction
+              </button>
+            </div>
+
+            <!-- Table -->
+            <div id="table-wrapper" class="d-none" style="overflow-x: auto;">
+              <table class="txn-table" role="grid" aria-label="Transactions list">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Amount</th>
+                    <th class="d-none d-md-table-cell">Category</th>
+                    <th class="d-none d-sm-table-cell">Date</th>
+                    <th>Type</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="transaction-tbody">
+                  <!-- Rows injected by ui.js -->
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Chart (right column) -->
+        <div class="col-12 col-xl-4">
+          <div class="section-card">
+            <div class="section-header">
+              <h2 class="section-title">Overview</h2>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="overview-chart" aria-label="Income vs Expenses doughnut chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <!-- end row -->
+
+    </main>
+
+    <!-- ── Add / Edit Transaction Modal ────────────────────────── -->
+    <div
+      class="modal fade"
+      id="transactionModal"
+      tabindex="-1"
+      aria-labelledby="modal-title"
+      aria-modal="true"
+      role="dialog"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h3 class="modal-title" id="modal-title">Add Transaction</h3>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            <form id="transaction-form" novalidate>
+              <!-- Hidden ID for edit mode -->
+              <input type="hidden" id="txn-id" />
+
+              <!-- Title -->
+              <div class="mb-3">
+                <label for="txn-title" class="form-label">Title</label>
+                <input
+                  type="text"
+                  id="txn-title"
+                  class="form-control"
+                  placeholder="e.g. Freelance payment, Grocery run"
+                  maxlength="80"
+                  required
+                />
+                <div class="invalid-feedback">Title is required.</div>
+              </div>
+
+              <!-- Amount -->
+              <div class="mb-3">
+                <label for="txn-amount" class="form-label">Amount (₦)</label>
+                <input
+                  type="number"
+                  id="txn-amount"
+                  class="form-control"
+                  placeholder="0.00"
+                  min="0.01"
+                  step="0.01"
+                  required
+                />
+                <div class="invalid-feedback">Enter a positive amount.</div>
+              </div>
+
+              <!-- Type + Category -->
+              <div class="row g-3 mb-3">
+                <div class="col-6">
+                  <label for="txn-type" class="form-label">Type</label>
+                  <select id="txn-type" class="form-select" required>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                  </select>
+                  <div class="invalid-feedback">Select a type.</div>
+                </div>
+                <div class="col-6">
+                  <label for="txn-category" class="form-label">Category</label>
+                  <input
+                    type="text"
+                    id="txn-category"
+                    class="form-control"
+                    placeholder="e.g. Food, Salary"
+                    list="category-suggestions"
+                    maxlength="40"
+                    required
+                  />
+                  <datalist id="category-suggestions">
+                    <option value="Salary">
+                    <option value="Freelance">
+                    <option value="Food">
+                    <option value="Transport">
+                    <option value="Rent">
+                    <option value="Utilities">
+                    <option value="Entertainment">
+                    <option value="Healthcare">
+                    <option value="Education">
+                    <option value="Shopping">
+                    <option value="Savings">
+                    <option value="Investment">
+                    <option value="Gift">
+                    <option value="Other">
+                  </datalist>
+                  <div class="invalid-feedback">Category is required.</div>
+                </div>
+              </div>
+
+              <!-- Date -->
+              <div class="mb-0">
+                <label for="txn-date" class="form-label">Date</label>
+                <input
+                  type="date"
+                  id="txn-date"
+                  class="form-control"
+                  required
+                />
+                <div class="invalid-feedback">Date is required.</div>
+              </div>
+
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn-cancel"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="transaction-form"
+              id="modal-submit-btn"
+              class="btn-submit"
+            >
+              Add Transaction
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Confirm Delete Modal ──────────────────────────────────── -->
+    <div
+      class="modal fade"
+      id="confirmDeleteModal"
+      tabindex="-1"
+      aria-labelledby="confirm-delete-title"
+      aria-modal="true"
+      role="alertdialog"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+          <div class="modal-body text-center py-4 px-3">
+            <div class="delete-icon-circle">
+              <i class="bi bi-trash3"></i>
+            </div>
+            <h5 id="confirm-delete-title" class="mb-2" style="font-family: var(--font-display); font-size: 1rem;">
+              Delete transaction?
+            </h5>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">
+              This action cannot be undone.
+            </p>
+            <div class="d-flex gap-2 mt-3">
+              <button
+                type="button"
+                class="btn-cancel w-50"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                id="confirm-delete-btn"
+                class="btn-submit w-50"
+                style="background: var(--expense-color);"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Toast Container ───────────────────────────────────────── -->
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- ── Scripts ───────────────────────────────────────────────── -->
+    <!-- Bootstrap 5 JS Bundle -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <!-- App Entry Point (ES Module) -->
+    <script type="module" src="assets/js/app.js"></script>
+
+  </body>
+</html>
