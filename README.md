@@ -75,13 +75,16 @@ This project demonstrates:
 
 ---
 
-## 🚀 Getting Started
+## 📸 Screenshots
 
-1. Clone the repo:
-git clone https://github.com/your-username/budgetbuddy-expense-tracker.git
+### Dashboard
+![Dashboard](screenshots/dashboard.png)
 
-2. Open index.html in browser
-OR use Live Server
+### Add Transaction Modal
+![Add Transaction](screenshots/add-transaction.png)
+
+### Mobile View
+![Mobile View](screenshots/mobile-responsive.png) 
 
 ---
 
