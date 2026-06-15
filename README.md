@@ -117,3 +117,8 @@ This project demonstrates:
 
 Japhet Sunday  
 Frontend Developer | Tech Enthusiast 
+
+---
+
+```markdown id="repo5"
+⭐ If you like this project, feel free to star the repository.
